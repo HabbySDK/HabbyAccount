@@ -1,0 +1,16 @@
+{
+  "name": "com.habbysdk.accountsdk",
+  "displayName": "HabbyAccount",
+  "unity": "2019.4",
+  "_upm": {
+    "changelog": "### HabbyMail\n."
+  },
+  "version": "1.0.0",
+  "description": "HabbyAccount lib",
+  "dependencies": {
+  },
+  "keywords": [
+    "HabbyAccount",
+    "HabbySDK"
+  ]
+}
