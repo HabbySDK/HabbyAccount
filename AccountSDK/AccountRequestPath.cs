@@ -8,7 +8,7 @@ namespace Habby.Account
     {
         public AccountRequestPath(string pPath) : base(HabbyAccountManager.ServerUrl, pPath)
         {
-            AddKeyword("SDKVersion",HabbyAccountManager.SDKVersion);
+            
         }
     }
 }

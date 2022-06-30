@@ -1,9 +1,12 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Habby.Account;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 using Habby.Account.Data;
+using Habby.Tool;
+
 namespace Habby.Account
 {
 
@@ -13,12 +16,12 @@ namespace Habby.Account
         public string appLanguage;
         public string netVersion;
     }
-    public class HabbyAccountManager : MonoBehaviour
+    public class HabbyAccountManager : MonoBehaviour, IClientData
     {
         public const string SDKVersion = "1.0";
         
         private static HabbyAccountManager sInstance = null;
-        private static HabbyAccountManager Instance
+        public static HabbyAccountManager Instance
         {
             get
             {
@@ -46,12 +49,48 @@ namespace Habby.Account
                 HabbyAccountBase.deviceIdDelgate = value;
             }
         }
+        
 
         public static void Init(AccountSetting pSetting, HabbyAccountBase pAccount, bool useDefaultOnFail = true)
         {
             Instance._setting = pSetting;
             Instance.useDefaultLoginOnFail = useDefaultOnFail;
             SetAccount(pAccount);
+            Instance.InitClientData();
+            
+            AccountHttpManager.Instance.AddCustomHeader("ClientData",Instance.customClientData);
+        }
+        
+        void InitClientData()
+        {
+            var tfields = new Dictionary<string, object>()
+            {
+                {"deviceId", SystemInfo.deviceUniqueIdentifier},
+                {"appVersion", Application.version},
+                {"osVersion", SystemInfo.operatingSystem},
+                {"systemLanguage", Application.systemLanguage.ToString()},
+                {"appBundle", Application.identifier},
+                {"deviceModel", UnityEngine.SystemInfo.deviceModel},
+            };
+
+            SetClientFields(tfields);
+        }
+        
+        public Dictionary<string, object> customClientData { get; private set; } = new Dictionary<string, object>();
+        public void SetClientFields(Dictionary<string, object> pFields)
+        {
+            if (pFields == null) return;
+            foreach (var item in pFields)
+            {
+                if (customClientData.ContainsKey(item.Key))
+                {
+                    customClientData[item.Key] = item.Value;
+                }
+                else
+                {
+                    customClientData.Add(item.Key, item.Value);
+                }
+            }
         }
 
         public static void SetAccount(HabbyAccountBase pAccount)

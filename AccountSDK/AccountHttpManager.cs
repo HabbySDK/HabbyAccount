@@ -1,3 +1,5 @@
+using Habby.Business;
+using Habby.Tool;
 using Habby.Tool.Http;
 namespace Habby.Account
 {
@@ -6,6 +8,7 @@ namespace Habby.Account
         public AccountHttpManager()
         {
             Tag = "AccountSDK";
+            SetPublicHeader("SDKVersion",HabbyAccountManager.SDKVersion);
         }
     }
 }
