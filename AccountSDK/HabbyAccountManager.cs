@@ -238,7 +238,8 @@ namespace Habby.Account
         private string lastSendPlayerChangedKey = null;
         public static event System.Action OnPlayerChangedEvent = null;
         #endregion
-        
+
+
         public void OnRecAccountMessage(string json)
         {
             AccountLog.LogFormat("[OnRecAccountMessage]:{0}", json);
@@ -246,29 +247,34 @@ namespace Habby.Account
 
             try
             {
-                JToken ttoken =  JToken.Parse(json);
-                if(ttoken == null) return;
-                var tevent = ttoken["eventName"];
-                var tsid =  ttoken["seqId"];
-                
-                if (tevent == null || tsid == null)
+                RecMessageItem tmsgobj = DataConvert.FromJson<RecMessageItem>(json);
+                if(tmsgobj == null) return;
+
+                if (string.IsNullOrEmpty(tmsgobj.eventName) || tmsgobj.seqId == -1)
                 {
-                    AccountLog.LogFormat("[OnRecAccountMessage]:event:{0},sid{1}", tevent,tsid);
+                    AccountLog.LogFormat("[OnRecAccountMessage]:event:{0},sid{1}", tmsgobj.eventName,tmsgobj.seqId);
                     return;
                 }
-
-                if (account != null && account is IReciveMessage)
+                
+                var tchannelAccount = Instance.setUPAccount;
+                if (tchannelAccount != null && tchannelAccount is IReciveMessage)
                 {
-                    ((IReciveMessage)account).OnReciveMessage(tevent.ToString(),int.Parse(tsid.ToString()),ttoken);
+                    ((IReciveMessage)tchannelAccount).OnReciveMessage(tmsgobj.eventName,tmsgobj.seqId,json);
                 }
             }
             catch (System.Exception e)
             {
-                AccountLog.LogError(e);
+                AccountLog.LogError($"OnRecAccountMessage error = {e}");
             }
             
             
         }
 
+    }
+
+    public class RecMessageItem
+    {
+        public string eventName;
+        public int seqId = -1;
     }
 }

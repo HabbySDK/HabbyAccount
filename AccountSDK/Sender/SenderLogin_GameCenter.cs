@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json.Linq;
 using Habby.Account;
 using Habby.Account.Data;
+using Habby.Tool;
 
 namespace Habby.Account.Sender
 {
@@ -33,9 +34,9 @@ namespace Habby.Account.Sender
             }
         }
 
-        public void LoadDataFromJson(JToken json)
+        public void LoadDataFromJson(string json)
         {
-            data = json?.ToObject<AccountDataBase>();
+            data = DataConvert.FromJson<AccountDataBase>(json);
         }
     }
 }

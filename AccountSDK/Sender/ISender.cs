@@ -5,6 +5,6 @@ namespace Habby.Account.Sender
     {
         int seqId { get; }
         void CallEvent();
-        void LoadDataFromJson(JToken json);
+        void LoadDataFromJson(string json);
     }
 }

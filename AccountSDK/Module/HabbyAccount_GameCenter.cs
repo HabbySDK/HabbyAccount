@@ -34,12 +34,6 @@ namespace Habby.Account
         public static extern string _GetUUID(string unityuuid);
 
 #endif
-        private static int _seqIndex = 1;
-        protected static int SeqId
-        {
-            get { return _seqIndex++; }
-        }
-        
         
         public ChannelDataBase channelData { get; private set; } = new AccountDataGameCenter();
         AccountDataGameCenter channelInfo => (AccountDataGameCenter)channelData;

@@ -35,6 +35,12 @@ namespace Habby.Account
         }
         
         const string accountFile = "account.data";
+        
+        protected static int _seqIndex = 1;
+        protected static int SeqId
+        {
+            get { return _seqIndex++; }
+        }
 
         private string _accountPathFile;
         public string accountPathFile
@@ -360,7 +366,11 @@ namespace Habby.Account
 
         protected ISender DequeueSender(int seq)
         {
-            if (!senderMap.ContainsKey(seq)) return null;
+            if (!senderMap.ContainsKey(seq))
+            {
+                AccountLog.LogError($"GetSender failed. seq = {seq}");
+                return null;
+            }
             var ret = senderMap[seq];
             senderMap.Remove(seq);
             return ret;
@@ -372,23 +382,26 @@ namespace Habby.Account
         }
 
 
-        void IReciveMessage.OnReciveMessage(string eventName, int sid, JToken jsonData)
+        void IReciveMessage.OnReciveMessage(string eventName, int sid, string jsonData)
         {
             try
             {
                 CallEvent(eventName, sid, jsonData);
 
-                var tsender = this.DequeueSender(sid);
-                tsender.LoadDataFromJson(jsonData);
-                tsender.CallEvent();
+                var tsender = DequeueSender(sid);
+                if (tsender != null)
+                {
+                    tsender.LoadDataFromJson(jsonData);
+                    tsender.CallEvent();
+                }
             }
             catch (System.Exception e)
             {
-                AccountLog.LogError(e);
+                AccountLog.LogError($"IReciveMessage.OnReciveMessage error = {e}");
             }
         }
 
-        protected void CallEvent(string eventName, int sid, JToken jsonData)
+        protected void CallEvent(string eventName, int sid, string jsonData)
         {
             if (eventName == null) return;
             if (!eventMap.ContainsKey(eventName)) return;
@@ -398,7 +411,7 @@ namespace Habby.Account
             }
             catch (Exception e)
             {
-                AccountLog.LogError(e);
+                AccountLog.LogError($"CallEvent error = {e}");
             }
         }
 

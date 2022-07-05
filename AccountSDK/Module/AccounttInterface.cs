@@ -50,7 +50,7 @@ namespace Habby.Account
 
     public interface IReciveMessage
     {
-        void OnReciveMessage(string eventName, int sid, JToken jsonData);
+        void OnReciveMessage(string eventName, int sid, string jsonData);
     }
 
     public interface ILogin
