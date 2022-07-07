@@ -138,7 +138,8 @@ static bool isCalledAuthenticate = false;
 
         if(isCalledAuthenticate)
         {
-            NSLog(@"gamecenter，isAuthenticated = true.but playerId or teamPlayerId = null.: %d", seqId);
+            bool tisauthent = tplayer.isAuthenticated;
+            NSLog(@"gamecenter，isAuthenticated = %@ .but playerId or teamPlayerId = null.: %d",[NSString stringWithFormat:@"%d",tisauthent], seqId);
             [HabbySDKAPI OnLoginGameCenterCallBack:tseqid forError:@"You must login to GameCenter first." forCode:6];
             return;
         }
@@ -233,23 +234,35 @@ static bool isCalledAuthenticate = false;
 {
     
     if(dictionary == nil) return;
+    GKLocalPlayer* tplayer = [HabbySDKAPI LocalPlayer];
+    
     [dictionary setValue:[NSString stringWithFormat:@"%d",code] forKey:@"code"];
     [dictionary setValue:[NSString stringWithFormat:@"%d",seqid] forKey:@"seqId"];
     [dictionary setValue:eventName forKey:@"eventName"];
 
     if(code == 0)
     {
-        [dictionary setValue:[HabbySDKAPI LocalPlayer].playerID forKey:@"playerID"];
+        bool tisauthent = tplayer.isAuthenticated;
+
+        [dictionary setValue:tplayer.playerID forKey:@"playerID"];
         
-        if (@available(iOS 12.4, *)) {
-            [dictionary setValue:[HabbySDKAPI LocalPlayer].teamPlayerID forKey:@"teamPlayerID"];
-            [dictionary setValue:[HabbySDKAPI LocalPlayer].gamePlayerID forKey:@"gamePlayerID"];
-        } else {
-            // Fallback on earlier versions
+        if(tisauthent)
+        {
+            if (@available(iOS 12.4, *)) {
+                [dictionary setValue:tplayer.teamPlayerID forKey:@"teamPlayerID"];
+                [dictionary setValue:tplayer.gamePlayerID forKey:@"gamePlayerID"];
+            } else {
+                // Fallback on earlier versions
+            }
         }
+        else
+        {
+            NSLog(@"gamecenter，AddPlayerIdToDictionary not login .isAuthenticated = %@",[NSString stringWithFormat:@"%d",tisauthent]);
+        }
+
     }
 
-    [dictionary setValue:[HabbySDKAPI LocalPlayer].displayName forKey:@"displayName"];
+    [dictionary setValue:tplayer.displayName forKey:@"displayName"];
 }
 
 +(void)SendJsonToUnity:(NSMutableDictionary*) dictionary forFun:(const char *)funName

@@ -4,9 +4,12 @@
 
 
 using System;
+using Habby.Account.Data;
+
+#if GOOGLEPLAY_LOGIN
 using GooglePlayGames;
 using GooglePlayGames.BasicApi;
-using Habby.Account.Data;
+#endif
 
 namespace Habby.Account.ThirdPartInterface
 {
